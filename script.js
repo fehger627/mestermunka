@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-//Bejelentkezés
+// Bejelentkezés
 function login() {
     const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
@@ -37,19 +37,26 @@ function login() {
             alert(data.error);
         } else {
             alert("Sikeres bejelentkezés!");
+
+            const userRole = data.user.role;  // Most már "admin" vagy "user"
+
             if (rememberMe) {
                 localStorage.setItem("loggedInUser", JSON.stringify(data.user));
+                localStorage.setItem("userRole", userRole);
             } else {
                 sessionStorage.setItem("loggedInUser", JSON.stringify(data.user));
+                sessionStorage.setItem("userRole", userRole);
             }
-            window.location.href = data.user.role === "admin" ? "esemenyek.html" : "index.html";
+
+            console.log("Bejelentkezett felhasználó:", data.user); // Ellenőrzés
+
+            window.location.href = userRole === "admin" ? "esemenyek.html" : "index.html";
         }
     })
     .catch(error => console.error("Hiba:", error));
 }
 
-
-//Regisztráció
+// Regisztráció
 function register() {
     const email = document.getElementById("email").value.trim();
     const username = document.getElementById("username").value.trim();
@@ -117,7 +124,7 @@ function isValidPassword(password) {
     return passwordPattern.test(password);
 }
 
-//Bejelentkezési értesítés
+// Bejelentkezési értesítés
 document.addEventListener("DOMContentLoaded", () => {
     const justLoggedIn = sessionStorage.getItem("justLoggedIn");
     const loggedInUser = sessionStorage.getItem("loggedInUser");
@@ -128,7 +135,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-//ki-be jelentkezes gomb
+// Ki-be jelentkezés gomb
 document.addEventListener("DOMContentLoaded", () => {
     const loginLogoutBtn = document.getElementById("loginLogoutBtn");
     const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser")) || JSON.parse(sessionStorage.getItem("loggedInUser"));
@@ -161,32 +168,149 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-document.addEventListener("DOMContentLoaded", function () {
-    fetch("api.php") // Kérdezzük le a bejelentkezési állapotot
+
+
+// Admin
+// Admin funkciók betöltése
+document.addEventListener("DOMContentLoaded", () => {
+    const userRole = sessionStorage.getItem("userRole") || localStorage.getItem("userRole");
+    
+    if (userRole === "admin") {
+        const adminButton = document.getElementById("adminButton");
+        if (adminButton) {
+            adminButton.style.display = "inline";
+        }
+    }
+
+    document.getElementById('adminButton').addEventListener('click', function() {
+        window.location.href = 'admin.html';  // Itt cseréld le az '/admin' URL-t, ha más URL-re akarod átirányítani.
+    });
+
+    // Felhasználók listázása gomb eseménykezelője
+    const fetchUsersButton = document.getElementById("fetchUsersButton");
+    if (fetchUsersButton) {
+        fetchUsersButton.addEventListener("click", fetchUsers);
+    } else {
+        console.error("HIBA: A fetchUsersButton elem nem található a DOM-ban!");
+    }
+
+    // Események listázása gomb eseménykezelője
+    const fetchEventsButton = document.getElementById("fetchEventsButton");
+    if (fetchEventsButton) {
+        fetchEventsButton.addEventListener("click", fetchEvents);
+    } else {
+        console.error("HIBA: A fetchEventsButton elem nem található a DOM-ban!");
+    }
+});
+
+// Felhasználók listázása
+function fetchUsers() {
+    fetch("http://localhost:3301/users")
+        .then(response => response.json())
+        .then(users => {
+            const userList = document.getElementById("userList");
+            userList.innerHTML = "";
+            users.forEach(user => {
+                const li = document.createElement("li");
+                li.textContent = `${user.username} (${user.email}) - ${user.role}`;
+
+                const deleteBtn = document.createElement("button");
+                deleteBtn.textContent = "Törlés";
+                deleteBtn.onclick = () => deleteUser(user.id);
+
+                li.appendChild(deleteBtn);
+                userList.appendChild(li);
+            });
+        })
+        .catch(error => console.error("Hiba:", error));
+}
+
+// Felhasználó törlése
+function deleteUser(userId) {
+    fetch(`http://localhost:3301/users/${userId}`, { method: "DELETE" })
         .then(response => response.json())
         .then(data => {
-            const userSection = document.getElementById("user-section");
-            if (data.loggedIn) {
-                // Ha be van jelentkezve, cseréljük le a bejelentkezési gombot a profilmenüre
-                userSection.innerHTML = `
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            ${data.username}
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="profil.html">Profilom</a></li>
-                            <li><a class="dropdown-item" href="logout.php">Kijelentkezés</a></li>
-                        </ul>
-                    </li>
-                `;
-            } else {
-                // Ha nincs bejelentkezve, marad a bejelentkezés gomb
-                userSection.innerHTML = `
-                    <li class="nav-item">
-                        <a class="nav-link" href="bejelentkezes.html">Bejelentkezés</a>
-                    </li>
-                `;
-            }
+            alert(data.message);
+            fetchUsers();
         })
-        .catch(error => console.error("Hiba a bejelentkezési állapot lekérdezésekor:", error));
-});
+        .catch(error => console.error("Hiba:", error));
+}
+
+// Események listázása
+function fetchEvents() {
+    fetch("http://localhost:3301/esemenyek")
+        .then(response => response.json())
+        .then(events => {
+            const eventList = document.getElementById("eventList");
+            eventList.innerHTML = "";
+            events.forEach(event => {
+                const li = document.createElement("li");
+                li.textContent = `${event.location} - ${event.date}`;
+
+                const deleteBtn = document.createElement("button");
+                deleteBtn.textContent = "Törlés";
+                deleteBtn.onclick = () => deleteEvent(event.id);
+
+                li.appendChild(deleteBtn);
+                eventList.appendChild(li);
+            });
+        })
+        .catch(error => console.error("Hiba:", error));
+}
+
+// Esemény hozzáadása
+function addEvent() {
+    const location = document.getElementById("eventLocation").value.trim();
+    const date = document.getElementById("eventDate").value.trim();
+
+    if (!location || !date) {
+        alert("Minden mezőt ki kell tölteni!");
+        return;
+    }
+
+    fetch("http://localhost:3301/esemenyek", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ location, date })
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message);
+        fetchEvents();
+    })
+    .catch(error => console.error("Hiba:", error));
+}
+
+// Esemény törlése
+function deleteEvent(eventId) {
+    fetch(`http://localhost:3301/esemenyek/${eventId}`, { method: "DELETE" })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);
+            fetchEvents();
+        })
+        .catch(error => console.error("Hiba:", error));
+}
+
+// Képfeltöltés
+function uploadImage() {
+    const fileInput = document.getElementById("imageUpload");
+    const file = fileInput.files[0];
+    if (!file) {
+        alert("Válassz ki egy képet!");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    fetch("http://localhost:3301/kepek", {
+        method: "POST",
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById("uploadMessage").textContent = data.message;
+    })
+    .catch(error => console.error("Hiba:", error));
+}
