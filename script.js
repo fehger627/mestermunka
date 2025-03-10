@@ -183,25 +183,25 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     document.getElementById('adminButton').addEventListener('click', function() {
-        window.location.href = 'admin.html';  // Itt cseréld le az '/admin' URL-t, ha más URL-re akarod átirányítani.
+        window.location.href = 'admin.html';
     });
 
-    // Felhasználók listázása gomb eseménykezelője
-    const fetchUsersButton = document.getElementById("fetchUsersButton");
-    if (fetchUsersButton) {
-        fetchUsersButton.addEventListener("click", fetchUsers);
-    } else {
-        console.error("HIBA: A fetchUsersButton elem nem található a DOM-ban!");
-    }
-
-    // Események listázása gomb eseménykezelője
-    const fetchEventsButton = document.getElementById("fetchEventsButton");
-    if (fetchEventsButton) {
-        fetchEventsButton.addEventListener("click", fetchEvents);
-    } else {
-        console.error("HIBA: A fetchEventsButton elem nem található a DOM-ban!");
-    }
-});
+        // Felhasználók listázása gomb eseménykezelője
+        const fetchUsersButton = document.getElementById("fetchUsersButton");
+        if (fetchUsersButton) {
+            fetchUsersButton.addEventListener("click", fetchUsers);
+        } else {
+            console.error("HIBA: A fetchUsersButton elem nem található!");
+        }
+    
+        // Események listázása gomb eseménykezelője
+        const fetchEventsButton = document.getElementById("fetchEventsButton");
+        if (fetchEventsButton) {
+            fetchEventsButton.addEventListener("click", fetchEvents);
+        } else {
+            console.error("HIBA: A fetchEventsButton elem nem található!");
+        }
+    });
 
 // Felhasználók listázása
 function fetchUsers() {
@@ -271,12 +271,17 @@ function addEvent() {
     fetch("http://localhost:3301/esemenyek", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ location, date })
+        body: JSON.stringify({ title: location, date }) //A server.js "title" mezőt vár!
     })
     .then(response => response.json())
     .then(data => {
-        alert(data.message);
-        fetchEvents();
+        if (data.error) {
+            console.error("Hiba az esemény hozzáadásakor:", data.error);
+            alert("Nem sikerült az eseményt hozzáadni!");
+        } else {
+            alert("Esemény sikeresen hozzáadva!");
+            fetchEvents(); //Frissíti az események listáját
+        }
     })
     .catch(error => console.error("Hiba:", error));
 }
@@ -296,6 +301,7 @@ function deleteEvent(eventId) {
 function uploadImage() {
     const fileInput = document.getElementById("imageUpload");
     const file = fileInput.files[0];
+
     if (!file) {
         alert("Válassz ki egy képet!");
         return;
@@ -304,13 +310,17 @@ function uploadImage() {
     const formData = new FormData();
     formData.append("image", file);
 
-    fetch("http://localhost:3301/kepek", {
+    fetch("http://localhost:3301/upload", { //Javítás: "/upload" az API végpont
         method: "POST",
         body: formData
     })
     .then(response => response.json())
     .then(data => {
-        document.getElementById("uploadMessage").textContent = data.message;
+        if (data.error) {
+            alert("Hiba a képfeltöltés során: " + data.error);
+        } else {
+            document.getElementById("uploadMessage").textContent = "Kép feltöltve!";
+        }
     })
     .catch(error => console.error("Hiba:", error));
 }
