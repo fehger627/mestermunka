@@ -132,7 +132,7 @@ app.delete("/esemenyek/:id", (req, res) => {
 
 //Képfeltöltés beállítása
 const storage = multer.diskStorage({
-    destination: "./uploads/",
+    destination: "./img/",
     filename: (req, file, cb) => {
         cb(null, Date.now() + path.extname(file.originalname));
     }
@@ -141,7 +141,7 @@ const upload = multer({ storage });
 
 app.post("/upload", upload.single("image"), (req, res) => {
     if (!req.file) return res.status(400).json({ error: "Nincs feltöltött fájl!" });
-    res.json({ message: "Kép sikeresen feltöltve!", filePath: `/uploads/${req.file.filename}` });
+    res.json({ message: "Kép sikeresen feltöltve!", filePath: `/img/${req.file.filename}` });
 });
 
 
