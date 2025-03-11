@@ -88,21 +88,29 @@ app.delete("/users/:id", (req, res) => {
 });
 
 
-//Események kezelése
-app.get("/esemenyek", (req, res) => {
-    db.query("SELECT * FROM esemenyek", (err, results) => {
-        if (err) return res.status(500).json({ error: err.message });
-        res.json(results);
+app.post("/esemenyek", (req, res) => {
+    const { Helyszin, Idopont } = req.body;
+    db.query("INSERT INTO esemenyek (Helyszin, Idopont) VALUES (?, ?)", [Helyszin, Idopont], (err, result) => {
+        if (err) {
+            console.error("SQL Hiba:", err);
+            return res.status(500).json({ error: err.message });
+        }
+        res.json({ message: "Esemény sikeresen hozzáadva!" });
     });
 });
 
+
 app.post("/esemenyek", (req, res) => {
-    const { title, date } = req.body;
-    db.query("INSERT INTO esemenyek (title, date) VALUES (?, ?)", [title, date], (err, result) => {
-        if (err) return res.status(500).json({ error: err.message });
-        res.json({ message: "Esemény hozzáadva!" });
+    const { Helyszin, date } = req.body;
+    db.query("INSERT INTO esemenyek (Helyszin, Idopont) VALUES (?, ?)", [Helyszin, Idopont], (err, result) => {
+        if (err) {
+            console.error("SQL Hiba:", err);
+            return res.status(500).json({ error: err.message });
+        }
+        res.json({ message: "Esemény sikeresen hozzáadva!" });
     });
 });
+
 
 app.delete("/esemenyek/:id", (req, res) => {
     const eventId = req.params.id;

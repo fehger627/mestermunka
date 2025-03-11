@@ -170,38 +170,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-// Admin
 // Admin funkciók betöltése
 document.addEventListener("DOMContentLoaded", () => {
     const userRole = sessionStorage.getItem("userRole") || localStorage.getItem("userRole");
-    
+
     if (userRole === "admin") {
         const adminButton = document.getElementById("adminButton");
         if (adminButton) {
             adminButton.style.display = "inline";
+            adminButton.addEventListener("click", () => {
+                window.location.href = "admin.html";
+            });
         }
     }
 
-    document.getElementById('adminButton').addEventListener('click', function() {
-        window.location.href = 'admin.html';
-    });
+    // Felhasználók listázása gomb eseménykezelője
+    const fetchUsersButton = document.getElementById("fetchUsersButton");
+    if (fetchUsersButton) {
+        fetchUsersButton.addEventListener("click", fetchUsers);
+    } else {
+        console.error("HIBA: A fetchUsersButton elem nem található!");
+    }
 
-        // Felhasználók listázása gomb eseménykezelője
-        const fetchUsersButton = document.getElementById("fetchUsersButton");
-        if (fetchUsersButton) {
-            fetchUsersButton.addEventListener("click", fetchUsers);
-        } else {
-            console.error("HIBA: A fetchUsersButton elem nem található!");
-        }
-    
-        // Események listázása gomb eseménykezelője
-        const fetchEventsButton = document.getElementById("fetchEventsButton");
-        if (fetchEventsButton) {
-            fetchEventsButton.addEventListener("click", fetchEvents);
-        } else {
-            console.error("HIBA: A fetchEventsButton elem nem található!");
-        }
-    });
+    // Események listázása gomb eseménykezelője
+    const fetchEventsButton = document.getElementById("fetchEventsButton");
+    if (fetchEventsButton) {
+        fetchEventsButton.addEventListener("click", fetchEvents);
+    } else {
+        console.error("HIBA: A fetchEventsButton elem nem található!");
+    }
+});
 
 // Felhasználók listázása
 function fetchUsers() {
@@ -209,6 +207,11 @@ function fetchUsers() {
         .then(response => response.json())
         .then(users => {
             const userList = document.getElementById("userList");
+            if (!userList) {
+                console.error("HIBA: A userList elem nem található!");
+                return;
+            }
+
             userList.innerHTML = "";
             users.forEach(user => {
                 const li = document.createElement("li");
@@ -242,10 +245,15 @@ function fetchEvents() {
         .then(response => response.json())
         .then(events => {
             const eventList = document.getElementById("eventList");
+            if (!eventList) {
+                console.error("HIBA: Az eventList elem nem található!");
+                return;
+            }
+
             eventList.innerHTML = "";
             events.forEach(event => {
                 const li = document.createElement("li");
-                li.textContent = `${event.location} - ${event.date}`;
+                li.textContent = `${event.title} - ${event.date}`; // title helyett location volt korábban
 
                 const deleteBtn = document.createElement("button");
                 deleteBtn.textContent = "Törlés";
@@ -260,10 +268,10 @@ function fetchEvents() {
 
 // Esemény hozzáadása
 function addEvent() {
-    const location = document.getElementById("eventLocation").value.trim();
-    const date = document.getElementById("eventDate").value.trim();
+    const Helyszin = document.getElementById("eventLocation").value.trim();
+    const Idopont = document.getElementById("eventDate").value.trim();
 
-    if (!location || !date) {
+    if (!Helyszin || !Idopont) {
         alert("Minden mezőt ki kell tölteni!");
         return;
     }
@@ -271,7 +279,7 @@ function addEvent() {
     fetch("http://localhost:3301/esemenyek", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: location, date }) //A server.js "title" mezőt vár!
+        body: JSON.stringify({ Helyszin, Idopont })
     })
     .then(response => response.json())
     .then(data => {
@@ -280,11 +288,12 @@ function addEvent() {
             alert("Nem sikerült az eseményt hozzáadni!");
         } else {
             alert("Esemény sikeresen hozzáadva!");
-            fetchEvents(); //Frissíti az események listáját
+            fetchEvents(); // Frissíti az események listáját
         }
     })
     .catch(error => console.error("Hiba:", error));
 }
+
 
 // Esemény törlése
 function deleteEvent(eventId) {
@@ -300,8 +309,12 @@ function deleteEvent(eventId) {
 // Képfeltöltés
 function uploadImage() {
     const fileInput = document.getElementById("imageUpload");
-    const file = fileInput.files[0];
+    if (!fileInput) {
+        console.error("HIBA: Az imageUpload elem nem található!");
+        return;
+    }
 
+    const file = fileInput.files[0];
     if (!file) {
         alert("Válassz ki egy képet!");
         return;
@@ -310,7 +323,7 @@ function uploadImage() {
     const formData = new FormData();
     formData.append("image", file);
 
-    fetch("http://localhost:3301/upload", { //Javítás: "/upload" az API végpont
+    fetch("http://localhost:3301/upload", { // Javítás: "/upload" az API végpont
         method: "POST",
         body: formData
     })
