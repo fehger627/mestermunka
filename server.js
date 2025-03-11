@@ -88,6 +88,16 @@ app.delete("/users/:id", (req, res) => {
 });
 
 
+app.get("/esemenyek", (req, res) => {
+    db.query("SELECT * FROM esemenyek", (err, results) => {
+        if (err) {
+            console.error("Hiba az események lekérdezésekor:", err);
+            return res.status(500).json({ error: err.message });
+        }
+        res.json(results);
+    });
+});
+
 app.post("/esemenyek", (req, res) => {
     const { Helyszin, Idopont } = req.body;
     db.query("INSERT INTO esemenyek (Helyszin, Idopont) VALUES (?, ?)", [Helyszin, Idopont], (err, result) => {

@@ -252,8 +252,12 @@ function fetchEvents() {
 
             eventList.innerHTML = "";
             events.forEach(event => {
+                // Dátum formázása
+                const eventDate = new Date(event.Idopont);
+                const formattedDate = eventDate.toISOString().split('T')[0]; // Levágjuk az időt
+
                 const li = document.createElement("li");
-                li.textContent = `${event.title} - ${event.date}`; // title helyett location volt korábban
+                li.textContent = `${event.Helyszin} - ${formattedDate}`; // Csak dátumot jelenítünk meg
 
                 const deleteBtn = document.createElement("button");
                 deleteBtn.textContent = "Törlés";
@@ -265,6 +269,7 @@ function fetchEvents() {
         })
         .catch(error => console.error("Hiba:", error));
 }
+
 
 // Esemény hozzáadása
 function addEvent() {
