@@ -38,7 +38,7 @@ function login() {
         } else {
             alert("Sikeres bejelentkezés!");
 
-            const userRole = data.user.role;  // Most már "admin" vagy "user"
+            const userRole = data.user.role;
 
             if (rememberMe) {
                 localStorage.setItem("loggedInUser", JSON.stringify(data.user));
@@ -328,7 +328,7 @@ function uploadImage() {
     const formData = new FormData();
     formData.append("image", file);
 
-    fetch("http://localhost:3301/upload", { // Javítás: "/upload" az API végpont
+    fetch("http://localhost:3301/upload", {
         method: "POST",
         body: formData
     })
