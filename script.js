@@ -109,6 +109,17 @@ function register() {
     .catch(error => console.error("Hiba:", error));
 }
 
+// E-mail validálás funkció
+function isValidEmail(email) {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailPattern.test(email);
+}
+
+// Jelszó validálás funkció
+function isValidPassword(password) {
+    const passwordPattern = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
+    return passwordPattern.test(password);
+}
 
 // Bejelentkezési értesítés
 document.addEventListener("DOMContentLoaded", () => {
