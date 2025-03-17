@@ -20,10 +20,15 @@
     </nav>
     <div class="register-container">
         <h2>Regisztráció</h2>
+        <div class="name-container">
+            <input type="text" id="lastName" placeholder="Vezetéknév">
+            <input type="text" id="firstName" placeholder="Keresztnév">
+        </div>
         <input type="email" id="email" placeholder="Email">
         <input type="text" id="username" placeholder="Felhasználónév">
         <input type="password" id="password" placeholder="Jelszó">
         <input type="password" id="confirmPassword" placeholder="Jelszó megerősítése">
+        <input type="tel" id="phoneNumber" placeholder="Telefonszám">
         <p id="message" style="color: red; text-align: center;"></p>
         <button onclick="register()">Regisztráció</button>
     </div>

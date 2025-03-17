@@ -56,47 +56,44 @@ function login() {
     .catch(error => console.error("Hiba:", error));
 }
 
-// Regisztráció
 function register() {
     const email = document.getElementById("email").value.trim();
     const username = document.getElementById("username").value.trim();
+    const Vnev = document.getElementById("lastname").value.trim(); // Vezetéknév
+    const Knev = document.getElementById("firstname").value.trim(); // Keresztnév
+    const Telefon = document.getElementById("phone").value.trim(); // Telefonszám
     const password = document.getElementById("password").value.trim();
     const confirmPassword = document.getElementById("confirmPassword").value.trim();
     const message = document.getElementById("message");
 
-    // Ellenőrizzük, hogy minden mező ki van-e töltve
-    if (!email || !username || !password || !confirmPassword) {
+    if (!email || !username || !Vnev || !Knev || !Telefon || !password || !confirmPassword) {
         message.style.color = "red";
         message.textContent = "Minden mezőt ki kell tölteni!";
         return;
     }
 
-    // Ellenőrizzük az e-mail formátumát
     if (!isValidEmail(email)) {
         message.style.color = "red";
         message.textContent = "Az e-mail cím formátuma nem megfelelő!";
         return;
     }
 
-    // Ellenőrizzük, hogy a jelszó megfelel-e a biztonsági követelményeknek
     if (!isValidPassword(password)) {
         message.style.color = "red";
         message.textContent = "A jelszónak legalább 8 karakter hosszúnak kell lennie, és tartalmaznia kell egy nagybetűt és egy számot!";
         return;
     }
 
-    // Ellenőrizzük, hogy a két jelszó megegyezik-e
     if (password !== confirmPassword) {
         message.style.color = "red";
         message.textContent = "A két jelszó nem egyezik!";
         return;
     }
 
-    // Küldés a szervernek
     fetch("http://localhost:3301/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, username, password })
+        body: JSON.stringify({ email, username, Vnev, Knev, Telefon, password })
     })
     .then(response => response.json())
     .then(data => {
@@ -112,17 +109,6 @@ function register() {
     .catch(error => console.error("Hiba:", error));
 }
 
-// E-mail validálás funkció
-function isValidEmail(email) {
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailPattern.test(email);
-}
-
-// Jelszó validálás funkció
-function isValidPassword(password) {
-    const passwordPattern = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
-    return passwordPattern.test(password);
-}
 
 // Bejelentkezési értesítés
 document.addEventListener("DOMContentLoaded", () => {

@@ -76,3 +76,8 @@ body {
 .register-container button:hover {
     background: #0048ff;
 }
+
+.name-container {
+    display: flex;
+    gap: 10px;
+}

@@ -49,18 +49,16 @@ app.post("/login", (req, res) => {
 
 
 app.post("/register", (req, res) => {
-    const { email, username, password, role } = req.body;
+    const { email, username, Vnev, Knev, Telefon, password, role } = req.body;
 
-    // Ha nincs megadva role, akkor alapértelmezettként 0 (sima felhasználó)
     const userRole = role === "admin" ? 1 : 0;
 
-    db.query("INSERT INTO users (email, username, password, Role) VALUES (?, ?, ?, ?)", 
-        [email, username, password, userRole], 
-        (err, result) => {
-            if (err) return res.status(500).json({ error: err.message });
-            res.json({ message: "Sikeres regisztráció!", id: result.insertId });
-        }
-    );
+    const sql = "INSERT INTO users (email, username, Vnev, Knev, Telefon, password, Role) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+    db.query(sql, [email, username, Vnev, Knev, Telefon, password, userRole], (err, result) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ message: "Sikeres regisztráció!", id: result.insertId });
+    });
 });
 
 
