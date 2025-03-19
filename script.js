@@ -59,9 +59,9 @@ function login() {
 function register() {
     const email = document.getElementById("email").value.trim();
     const username = document.getElementById("username").value.trim();
-    const Vnev = document.getElementById("lastname").value.trim(); // Vezetéknév
-    const Knev = document.getElementById("firstname").value.trim(); // Keresztnév
-    const Telefon = document.getElementById("phone").value.trim(); // Telefonszám
+    const Vnev = document.getElementById("lastname").value.trim();
+    const Knev = document.getElementById("firstname").value.trim();
+    const Telefon = document.getElementById("phone").value.trim();
     const password = document.getElementById("password").value.trim();
     const confirmPassword = document.getElementById("confirmPassword").value.trim();
     const message = document.getElementById("message");
