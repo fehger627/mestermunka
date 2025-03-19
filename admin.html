@@ -16,16 +16,14 @@
 
     <section>
         <h2>Felhasználók kezelése</h2>
-        <!-- Felhasználók listázása gomb -->
-        <button id="fetchUsersButton">Felhasználók listázása</button>
-        <ul id="userList"></ul>
+        <button id="fetchUsersButton" onclick="toggleUserList()">Felhasználók listázása</button>
+        <ul id="userList" style="display: none;"></ul>
     </section>
     
     <section>
         <h2>Események kezelése</h2>
-        <!-- Események listázása gomb -->
-        <button id="fetchEventsButton">Események listázása</button>
-        <ul id="eventList"></ul>
+        <button id="fetchEventsButton" onclick="toggleEventList()">Események listázása</button>
+        <ul id="eventList" style="display: none;"></ul>
     
         <h3>Új esemény hozzáadása</h3>
         <input type="text" id="eventLocation" placeholder="Helyszín">
@@ -35,10 +33,11 @@
     
     <section>
         <h2>Galéria képfeltöltés</h2>
-        <input type="file" id="imageUpload">
+        <input type="file" id="imageUpload" accept=".jpg, .jpeg, .png, .gif">
         <button onclick="uploadImage()">Feltöltés</button>
         <p id="uploadMessage"></p>
-    </section>    
+    </section>
+       
 
     <script src="script.js" defer></script>
 </body>

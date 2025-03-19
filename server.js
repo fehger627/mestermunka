@@ -128,18 +128,47 @@ app.delete("/esemenyek/:id", (req, res) => {
     });
 });
 
-//Képfeltöltés beállítása
+// Képfeltöltés beállítása
 const storage = multer.diskStorage({
     destination: "./img/",
     filename: (req, file, cb) => {
         cb(null, Date.now() + path.extname(file.originalname));
     }
 });
-const upload = multer({ storage });
 
-app.post("/upload", upload.single("image"), (req, res) => {
-    if (!req.file) return res.status(400).json({ error: "Nincs feltöltött fájl!" });
-    res.json({ message: "Kép sikeresen feltöltve!", filePath: `/img/${req.file.filename}` });
+// Engedélyezett fájltípusok
+const fileFilter = (req, file, cb) => {
+    const allowedExtensions = [".jpg", ".jpeg", ".png", ".gif"];
+    const ext = path.extname(file.originalname).toLowerCase();
+
+    if (allowedExtensions.includes(ext)) {
+        cb(null, true);
+    } else {
+        cb(new Error("Csak JPG, JPEG, PNG és GIF fájlok tölthetők fel!"), false);
+    }
+};
+
+// Feltöltési limit beállítása (pl. max. 5 MB)
+const upload = multer({
+    storage,
+    fileFilter,
+    limits: { fileSize: 5 * 1024 * 1024 } // 5 MB
+});
+
+app.post("/upload", (req, res) => {
+    upload.single("image")(req, res, (err) => {
+        if (err instanceof multer.MulterError) {
+            return res.status(400).json({ error: "A fájl túl nagy! (Max: 5MB)" });
+        } else if (err) {
+            return res.status(400).json({ error: err.message });
+        }
+
+        if (!req.file) {
+            return res.status(400).json({ error: "Nincs feltöltött fájl!" });
+        }
+
+        res.json({ message: "Kép sikeresen feltöltve!", filePath: `/img/${req.file.filename}` });
+    });
 });
 
 

@@ -311,6 +311,8 @@ function deleteEvent(eventId) {
 // Képfeltöltés
 function uploadImage() {
     const fileInput = document.getElementById("imageUpload");
+    const uploadMessage = document.getElementById("uploadMessage");
+
     if (!fileInput) {
         console.error("HIBA: Az imageUpload elem nem található!");
         return;
@@ -318,7 +320,16 @@ function uploadImage() {
 
     const file = fileInput.files[0];
     if (!file) {
-        alert("Válassz ki egy képet!");
+        uploadMessage.textContent = "Válassz ki egy képet!";
+        uploadMessage.style.color = "red";
+        return;
+    }
+
+    // Engedélyezett fájltípusok
+    const allowedExtensions = ["image/jpeg", "image/png", "image/gif"];
+    if (!allowedExtensions.includes(file.type)) {
+        uploadMessage.textContent = "Csak JPG, PNG vagy GIF formátum engedélyezett!";
+        uploadMessage.style.color = "red";
         return;
     }
 
@@ -332,10 +343,41 @@ function uploadImage() {
     .then(response => response.json())
     .then(data => {
         if (data.error) {
-            alert("Hiba a képfeltöltés során: " + data.error);
+            uploadMessage.textContent = "Hiba a képfeltöltés során: " + data.error;
+            uploadMessage.style.color = "red";
         } else {
-            document.getElementById("uploadMessage").textContent = "Kép feltöltve!";
+            uploadMessage.textContent = "Kép feltöltve!";
+            uploadMessage.style.color = "green";
         }
     })
-    .catch(error => console.error("Hiba:", error));
+    .catch(error => {
+        console.error("Hiba:", error);
+        uploadMessage.textContent = "Hálózati hiba!";
+        uploadMessage.style.color = "red";
+    });
+}
+
+
+// Felhasználók listázásának ki-be kapcsolása
+function toggleUserList() {
+    const userList = document.getElementById("userList");
+
+    if (userList.style.display === "none" || userList.style.display === "") {
+        userList.style.display = "block"; // Megjelenítés
+        fetchUsers(); // Ha még nem töltöttük be, akkor betöltjük
+    } else {
+        userList.style.display = "none"; // Elrejtés
+    }
+}
+
+// Események listázásának ki-be kapcsolása
+function toggleEventList() {
+    const eventList = document.getElementById("eventList");
+
+    if (eventList.style.display === "none" || eventList.style.display === "") {
+        eventList.style.display = "block"; // Megjelenítés
+        fetchEvents(); // Ha még nem töltöttük be, akkor betöltjük
+    } else {
+        eventList.style.display = "none"; // Elrejtés
+    }
 }
