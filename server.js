@@ -33,7 +33,7 @@ app.post("/login", (req, res) => {
             if (results.length > 0) {
                 let user = results[0];
 
-                // 📌 Ellenőrizzük, hogy az admin szerepkört jól kezeljük-e
+                
                 user.role = (user.role === 1 || user.role === "admin") ? "admin" : "user";
 
                 res.json({ message: "Sikeres bejelentkezés!", user });
@@ -148,11 +148,11 @@ const fileFilter = (req, file, cb) => {
     }
 };
 
-// Feltöltési limit beállítása (pl. max. 5 MB)
+// Feltöltési limit beállítása
 const upload = multer({
     storage,
     fileFilter,
-    limits: { fileSize: 5 * 1024 * 1024 } // 5 MB
+    limits: { fileSize: 5 * 1024 * 1024 }
 });
 
 app.post("/upload", (req, res) => {

@@ -251,10 +251,10 @@ function fetchEvents() {
             events.forEach(event => {
                 // Dátum formázása
                 const eventDate = new Date(event.Idopont);
-                const formattedDate = eventDate.toISOString().split('T')[0]; // Levágjuk az időt
+                const formattedDate = eventDate.toISOString().split('T')[0];
 
                 const li = document.createElement("li");
-                li.textContent = `${event.Helyszin} - ${formattedDate}`; // Csak dátumot jelenítünk meg
+                li.textContent = `${event.Helyszin} - ${formattedDate}`;
 
                 const deleteBtn = document.createElement("button");
                 deleteBtn.textContent = "Törlés";
@@ -290,7 +290,7 @@ function addEvent() {
             alert("Nem sikerült az eseményt hozzáadni!");
         } else {
             alert("Esemény sikeresen hozzáadva!");
-            fetchEvents(); // Frissíti az események listáját
+            fetchEvents();
         }
     })
     .catch(error => console.error("Hiba:", error));
@@ -363,10 +363,10 @@ function toggleUserList() {
     const userList = document.getElementById("userList");
 
     if (userList.style.display === "none" || userList.style.display === "") {
-        userList.style.display = "block"; // Megjelenítés
-        fetchUsers(); // Ha még nem töltöttük be, akkor betöltjük
+        userList.style.display = "block";
+        fetchUsers();
     } else {
-        userList.style.display = "none"; // Elrejtés
+        userList.style.display = "none";
     }
 }
 
@@ -375,9 +375,9 @@ function toggleEventList() {
     const eventList = document.getElementById("eventList");
 
     if (eventList.style.display === "none" || eventList.style.display === "") {
-        eventList.style.display = "block"; // Megjelenítés
-        fetchEvents(); // Ha még nem töltöttük be, akkor betöltjük
+        eventList.style.display = "block";
+        fetchEvents();
     } else {
-        eventList.style.display = "none"; // Elrejtés
+        eventList.style.display = "none";
     }
 }
