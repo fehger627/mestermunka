@@ -87,7 +87,7 @@ app.delete("/users/:id", (req, res) => {
 
 
 app.get("/esemenyek", (req, res) => {
-    db.query("SELECT * FROM esemenyek", (err, results) => {
+    db.query("SELECT id, Helyszin, DATE_FORMAT(Idopont, '%Y-%m-%d') AS Datum FROM esemenyek", (err, results) => {
         if (err) {
             console.error("Hiba az események lekérdezésekor:", err);
             return res.status(500).json({ error: err.message });
@@ -107,19 +107,6 @@ app.post("/esemenyek", (req, res) => {
     });
 });
 
-
-app.post("/esemenyek", (req, res) => {
-    const { Helyszin, date } = req.body;
-    db.query("INSERT INTO esemenyek (Helyszin, Idopont) VALUES (?, ?)", [Helyszin, Idopont], (err, result) => {
-        if (err) {
-            console.error("SQL Hiba:", err);
-            return res.status(500).json({ error: err.message });
-        }
-        res.json({ message: "Esemény sikeresen hozzáadva!" });
-    });
-});
-
-
 app.delete("/esemenyek/:id", (req, res) => {
     const eventId = req.params.id;
     db.query("DELETE FROM esemenyek WHERE id = ?", [eventId], (err, result) => {
@@ -127,6 +114,9 @@ app.delete("/esemenyek/:id", (req, res) => {
         res.json({ message: "Esemény törölve!" });
     });
 });
+
+
+
 
 // Képfeltöltés beállítása
 const storage = multer.diskStorage({

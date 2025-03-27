@@ -381,3 +381,42 @@ function toggleEventList() {
         eventList.style.display = "none";
     }
 }
+
+// esemenyek oldal
+document.addEventListener("DOMContentLoaded", fetchEvents);
+
+function fetchEvents() {
+    fetch("http://localhost:3301/esemenyek")
+        .then(response => response.json())
+        .then(data => {
+            const eventList = document.getElementById("eventList");
+            eventList.innerHTML = ""; // Lista törlése újratöltés előtt
+
+            data.forEach(event => {
+                const listItem = document.createElement("li");
+                listItem.textContent = `${event.Helyszin} - ${event.Idopont}`; // Csak a dátum
+                eventList.appendChild(listItem);
+            });
+        })
+        .catch(error => console.error("Hiba az események lekérésekor:", error));
+}
+
+function fetchEvents() {
+    fetch("http://localhost:3301/esemenyek")
+        .then(response => response.json())
+        .then(data => {
+            const eventList = document.getElementById("eventList");
+            eventList.innerHTML = ""; // Lista törlése újratöltés előtt
+
+            data.forEach(event => {
+                const listItem = document.createElement("li");
+
+                // Ha az API már formázott dátumot küld (YYYY-MM-DD), csak használjuk
+                const formattedDate = event.Datum ? event.Datum : event.Idopont.split("T")[0];
+
+                listItem.textContent = `${event.Helyszin} - ${formattedDate}`; // Csak a dátumot jelenítjük meg
+                eventList.appendChild(listItem);
+            });
+        })
+        .catch(error => console.error("Hiba az események lekérésekor:", error));
+}
